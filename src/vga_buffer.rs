@@ -3,6 +3,23 @@ use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
 
+#[macro_export]
+macro_rules! print {
+    ($($args:tt)*) => ($crate::vga_buffer::_print(format_args!($($args)*)));
+}
+
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($args:tt)*) => ($crate::print!("{}\n", format_args!($($args)*)));
+}
+
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    use core::fmt::Write;
+    WRITER.lock().write_fmt(args).unwrap();
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
