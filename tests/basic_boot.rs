@@ -9,24 +9,21 @@ use rustic_vault::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Hello Sailor{}", "!");
-
-    #[cfg(test)]
     test_main();
 
     loop {}
 }
 
-/// This function is called on panic
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
-    loop {}
+fn test_runner(tests: &[&dyn Fn()]) {
+    unimplemented!();
 }
 
-#[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     rustic_vault::test_panic_handler(info)
+}
+
+#[test_case]
+fn test_println() {
+    println!("test_println output");
 }
