@@ -12,13 +12,6 @@ pub extern "C" fn _start() -> ! {
     println!("Hello Sailor{}", "!");
 
     rustic_vault::init();
-    fn stack_overflow() {
-        stack_overflow();
-    }
-    stack_overflow();
-
-    // invoke a breakpoint exception
-    x86_64::instructions::interrupts::int3();
 
     #[cfg(test)]
     test_main();
