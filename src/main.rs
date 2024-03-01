@@ -6,9 +6,9 @@
 
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use rustic_vault::memory;
+use rustic_vault::memory::{self, BootInfoFrameAllocator};
 use rustic_vault::println;
-use x86_64::structures::paging::{PageTable, Translate};
+use x86_64::structures::paging::{Page, PageTable, Translate};
 use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
@@ -21,25 +21,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     rustic_vault::init();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    // init a mapper
-    let mapper = unsafe { memory::init(phys_mem_offset) };
-
-    let addresses = [
-        // the identity-mapped vga buffer page
-        0xb8000,
-        // some code page
-        0x201008,
-        // some stack page
-        0x100_0020_1a10,
-        // virtual address mapped to physical address 0
-        boot_info.physical_memory_offset,
-    ];
-
-    for &address in &addresses {
-        let virt = VirtAddr::new(address);
-        let phys = mapper.translate_addr(virt);
-        println!("{:?} -> {:?}", virt, phys);
-    }
+    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 
     #[cfg(test)]
     test_main();
