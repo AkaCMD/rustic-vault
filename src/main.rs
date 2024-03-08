@@ -11,7 +11,6 @@ use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use rustic_vault::memory::{self, BootInfoFrameAllocator};
 use rustic_vault::{allocator, println};
-use x86_64::structures::paging::{Page, PageTable, Translate};
 use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
